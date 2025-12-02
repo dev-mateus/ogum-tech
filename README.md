@@ -47,7 +47,7 @@ Sistema completo para gerenciamento de filas de atendimento em giras de Umbanda,
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/dev-mateus/ogum-tech.git
+git clone https://github.com/seu-usuario/ogum-tech.git
 cd ogum-tech
 ```
 

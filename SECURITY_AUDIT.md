@@ -1,4 +1,4 @@
-# Auditoria de Segurança - Ogum Tech v2
+# Auditoria de Segurança - Ogum Tech
 
 ## 📊 Status: ✅ SEGURO
 

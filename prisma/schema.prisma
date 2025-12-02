@@ -1,4 +1,4 @@
-// Prisma Schema - Ogum Tech v2
+// Prisma Schema - Ogum Tech
 generator client {
   provider = "prisma-client-js"
 }

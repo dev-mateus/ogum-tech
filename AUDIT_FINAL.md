@@ -1,4 +1,4 @@
-# ✅ Auditoria Completa - Ogum Tech v2
+# ✅ Auditoria Completa - Ogum Tech
 
 **Data**: 2 de dezembro de 2025  
 **Status**: ✅ APROVADO PARA PRODUÇÃO
@@ -178,7 +178,7 @@ git init
 git add .
 git commit -m "feat: sistema completo de gestão de giras"
 git branch -M main
-git remote add origin https://github.com/seu-usuario/ogum-tech-v2.git
+git remote add origin https://github.com/seu-usuario/ogum-tech.git
 git push -u origin main
 
 # 3. Deploy no Vercel
