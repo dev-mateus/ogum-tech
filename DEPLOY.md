@@ -1,274 +1,397 @@
 # Guia de Deploy - Ogum Tech
 
-Este guia cobre o deploy do sistema usando Vercel (frontend/backend) + Supabase (PostgreSQL).
+Este guia descreve o processo completo de deploy do Ogum Tech usando **Vercel** (frontend/backend) e **Supabase** (PostgreSQL).
 
 ## 📋 Pré-requisitos
 
-- Conta no [Supabase](https://supabase.com) (free tier ok)
-- Conta no [Vercel](https://vercel.com) (free tier ok)
+- Conta no [Supabase](https://supabase.com) (tier gratuito disponível)
+- Conta no [Vercel](https://vercel.com) (tier gratuito disponível)
 - Repositório Git (GitHub, GitLab ou Bitbucket)
+- Node.js 18+ instalado localmente (para testes)
 
-## 🗄️ Passo 1: Configurar Supabase
+## 🗄️ Passo 1: Configurar Banco de Dados no Supabase
 
 ### 1.1 Criar Projeto
 
 1. Acesse https://supabase.com/dashboard
-2. Clique em "New Project"
-3. Escolha:
-   - **Name**: ogum-tech-production
-   - **Database Password**: Gere uma senha forte (guarde!)
-   - **Region**: Escolha mais próxima dos usuários (ex: South America - São Paulo)
-   - **Pricing Plan**: Free (até 500MB, 2 projetos)
+2. Clique em **"New Project"**
+3. Preencha os dados:
+   - **Name**: `ogum-tech-production` (ou nome de sua preferência)
+   - **Database Password**: Crie uma senha forte (anote em local seguro!)
+   - **Region**: Escolha a região mais próxima dos usuários finais
+     - Brasil: `South America (São Paulo)`
+     - Outros: `US East`, `Europe`, etc.
+   - **Pricing Plan**: Free (500MB, até 2 projetos)
 
-4. Aguarde ~2 minutos para provisionar
+4. Clique em **"Create new project"**
+5. Aguarde ~2 minutos enquanto o Supabase provisiona o banco
 
 ### 1.2 Obter Strings de Conexão
 
-1. No dashboard, vá em **Settings** → **Database**
-2. Em **Connection String**, copie:
-   - **Connection pooling** (para `DATABASE_URL`):
-     ```
-     postgresql://postgres.xxxxx:[PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
-     ```
-   - **Direct connection** (para `DIRECT_URL`):
-     ```
-     postgresql://postgres.xxxxx:[PASSWORD]@aws-0-sa-east-1.compute-1.amazonaws.com:5432/postgres
-     ```
+1. No dashboard do projeto, navegue para **Settings** → **Database**
 
-3. Substitua `[PASSWORD]` pela senha que você criou
+2. Role até **Connection String** e copie as duas URLs:
 
-### 1.3 Whitelist de IPs (Opcional)
-
-Por padrão, Supabase permite conexões de qualquer IP. Para maior segurança:
-
-1. Em **Settings** → **Database** → **Connection Security**
-2. Adicione apenas IPs confiáveis (Vercel tem IPs dinâmicos, então melhor deixar aberto ou usar Vercel Edge Middleware)
-
-## 🚀 Passo 2: Deploy no Vercel
-
-### 2.1 Conectar Repositório
-
-1. Push seu código para GitHub:
-   ```bash
-   git init
-   git add .
-   git commit -m "feat: deploy inicial do ogum-tech"
-   git branch -M main
-   git remote add origin https://github.com/dev-mateus/ogum-tech.git
-   git push -u origin main
+   **a) Connection Pooling (para `DATABASE_URL`):**
+   ```
+   postgresql://postgres.xxxxx:[YOUR-PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
+   ```
+   
+   **b) Direct Connection (para `DIRECT_URL`):**
+   ```
+   postgresql://postgres.xxxxx:[YOUR-PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:5432/postgres
    ```
 
-2. Acesse https://vercel.com/new
-3. Clique em "Import Git Repository"
-4. Selecione seu repositório `ogum-tech`
+3. **Importante:** Substitua `[YOUR-PASSWORD]` pela senha que você criou
 
-### 2.2 Configurar Variáveis de Ambiente
+4. **Se a senha contém caracteres especiais**, codifique-a em URL:
+   - `@` → `%40`
+   - `&` → `%26`
+   - `#` → `%23`
+   - Exemplo: `WA@zPs&Yec7` → `WA%40zPs%26Yec7`
 
-Antes de fazer deploy, configure as variáveis:
+### 1.3 Executar Migrações (Via Vercel)
 
-1. Em **Configure Project** → **Environment Variables**, adicione:
+⚠️ **Nota:** Não é necessário criar tabelas manualmente. O Vercel executará as migrações automaticamente durante o deploy via `prisma generate`.
 
-```env
-DATABASE_URL=postgresql://postgres.xxxxx:[PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
-DIRECT_URL=postgresql://postgres.xxxxx:[PASSWORD]@aws-0-sa-east-1.compute-1.amazonaws.com:5432/postgres
-NEXTAUTH_SECRET=<gere-uma-chave-forte>
-NEXTAUTH_URL=https://ogum-tech.vercel.app
-NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<sua-anon-key>
-```
+Se preferir criar as tabelas antes do deploy:
 
-2. Para gerar `NEXTAUTH_SECRET` forte:
+1. Configure o `.env` localmente com as strings de conexão
+2. Execute:
    ```bash
-   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   npx prisma migrate deploy
    ```
 
-3. Para obter Supabase URL e ANON_KEY:
-   - **Settings** → **API** → copie `URL` e `anon public`
-
-### 2.3 Build Settings
-
-Vercel detecta Next.js automaticamente, mas confirme:
-
-- **Framework Preset**: Next.js
-- **Build Command**: `npm run build` (ou deixe padrão)
-- **Output Directory**: `.next` (ou deixe padrão)
-- **Install Command**: `npm install` (ou deixe padrão)
-
-### 2.4 Deploy!
-
-1. Clique em **Deploy**
-2. Aguarde ~2-3 minutos
-3. Vercel mostrará URL de produção: `https://ogum-tech-xxx.vercel.app`
-
-## 🛠️ Passo 3: Rodar Migrations em Produção
-
-Após primeiro deploy, você precisa criar as tabelas no Supabase:
-
-### Opção A: Via Prisma Studio (Recomendado)
-
-1. Baixe o Prisma localmente apontando para produção:
-   ```bash
-   # Crie .env.production com DATABASE_URL de produção
-   npx prisma migrate deploy --schema=./prisma/schema.prisma
-   ```
-
-2. Popule dados iniciais:
+3. (Opcional) Popule com dados iniciais:
    ```bash
    npx prisma db seed
    ```
 
-### Opção B: Via Supabase SQL Editor
+## 🚀 Passo 2: Deploy no Vercel
 
-1. Acesse **SQL Editor** no dashboard Supabase
-2. Copie o conteúdo de `prisma/migrations/XXX_init_schema/migration.sql`
-3. Execute no editor
-4. Insira dados iniciais manualmente ou rode seed localmente apontando para produção
+### 2.1 Preparar Repositório Git
 
-## 🔐 Passo 4: Criar Usuário Admin em Produção
-
-### Via Script (Recomendado)
-
-1. Crie um arquivo `create-admin.ts`:
-   ```typescript
-   import { PrismaClient } from '@prisma/client'
-   import { hash } from 'bcryptjs'
-
-   const prisma = new PrismaClient()
-
-   async function main() {
-     const password = await hash('SenhaForte@2024', 10)
-     const admin = await prisma.user.create({
-       data: {
-         name: 'Admin Produção',
-         email: 'admin@seudominio.com.br',
-         passwordHash: password,
-         role: 'admin',
-       },
-     })
-     console.log('Admin criado:', admin.email)
-   }
-
-   main().finally(() => prisma.$disconnect())
+1. Certifique-se de que todo o código está commitado:
+   ```bash
+   git add .
+   git commit -m "feat: preparação para deploy em produção"
    ```
 
-2. Configure `.env` com `DATABASE_URL` de produção temporariamente
-3. Rode: `npx tsx create-admin.ts`
+2. Faça push para o repositório remoto:
+   ```bash
+   git push origin main
+   ```
 
-### Via Supabase SQL
+### 2.2 Importar Projeto no Vercel
 
-Execute no SQL Editor:
+1. Acesse https://vercel.com/new
+2. Clique em **"Import Git Repository"**
+3. Selecione seu repositório `ogum-tech`
+4. Vercel detectará automaticamente que é um projeto Next.js
 
-```sql
-INSERT INTO "User" (id, name, email, "passwordHash", role, "createdAt")
-VALUES (
-  gen_random_uuid(),
-  'Admin Produção',
-  'admin@seudominio.com.br',
-  '$2a$10$HASH_GERADO_AQUI',  -- Use bcrypt online para gerar
-  'admin',
-  NOW()
-);
-```
+### 2.3 Configurar Variáveis de Ambiente
 
-## ✅ Passo 5: Verificar Deploy
+⚠️ **CRÍTICO:** Configure todas as variáveis **ANTES** de fazer o primeiro deploy.
 
-1. Acesse `https://seu-app.vercel.app`
-2. Deve redirecionar para `/login`
-3. Faça login com credenciais do admin criado
-4. Teste criar uma função, tipo de gira, usuário
-5. Abra uma gira e adicione consulente
+Na seção **Environment Variables**, adicione:
 
-## 🔄 Passo 6: Configurar CI/CD
+| Nome da Variável | Valor | Descrição |
+|------------------|-------|-----------|
+| `DATABASE_URL` | `postgresql://postgres.xxxxx:[PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres` | Connection pooling (porta 6543) |
+| `DIRECT_URL` | `postgresql://postgres.xxxxx:[PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:5432/postgres` | Conexão direta (porta 5432) |
+| `NEXTAUTH_SECRET` | (gere uma chave forte - veja abaixo) | Secret para assinar JWTs |
 
-Vercel automaticamente faz redeploy a cada push no `main`:
+**Para gerar `NEXTAUTH_SECRET`:**
 
 ```bash
-git add .
-git commit -m "feat: adiciona nova funcionalidade"
-git push origin main
-# Deploy automático em ~2 minutos
+# Windows (PowerShell)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Linux/Mac
+openssl rand -base64 32
 ```
 
-## 🛡️ Checklist de Segurança
+### 2.4 Build Settings (Automático)
 
-Antes de ir para produção, revise:
+Vercel detecta Next.js automaticamente. Confirme que está configurado:
 
-- [ ] `NEXTAUTH_SECRET` forte (32+ bytes em hex)
-- [ ] Senhas de admin fortes (min 12 caracteres, maiúsculas, números, símbolos)
-- [ ] `DATABASE_URL` e `DIRECT_URL` usando credentials pool do Supabase
-- [ ] Remova credenciais padrão (`admin@ogum.local`, etc)
-- [ ] Remova seeds de teste em produção
-- [ ] Configure domínio customizado no Vercel (ex: `app.seuterreiro.com.br`)
-- [ ] Habilite SSL/HTTPS (Vercel faz automático)
-- [ ] Configure CORS se tiver frontend separado
-- [ ] Monitore logs de erro no Vercel Dashboard
+- **Framework Preset:** Next.js
+- **Build Command:** `npm run build` (já inclui `prisma generate`)
+- **Output Directory:** `.next`
+- **Install Command:** `npm install` (já executa `postinstall: prisma generate`)
 
-## 📊 Monitoramento
+### 2.5 Fazer Deploy
 
-### Vercel Analytics
+1. Clique em **"Deploy"**
+2. Aguarde 2-3 minutos enquanto Vercel:
+   - Instala dependências (`npm install`)
+   - Executa `postinstall` (gera Prisma Client)
+   - Faz build (`npm run build`)
+   - Deploy para CDN global
 
-1. Em **Settings** → **Analytics**, habilite Vercel Analytics (free tier: 2.5k pageviews/mês)
-2. Monitore tempos de resposta e erros
+3. Ao finalizar, você receberá uma URL:
+   ```
+   https://ogum-tech.vercel.app
+   ```
 
-### Supabase Logs
+## ✅ Passo 3: Validar Deploy
 
-1. **Database** → **Logs**: Queries lentas, erros de conexão
-2. **API** → **Logs**: Uso de Realtime, Auth
+### 3.1 Verificar Logs de Build
 
-### Limites Free Tier
+1. No dashboard do Vercel, clique no deploy
+2. Vá em **"Logs"**
+3. Verifique que não há erros, especialmente:
+   - ✅ `prisma generate` executado com sucesso
+   - ✅ Build Next.js concluído
+   - ✅ Sem erros de conexão com banco
 
-**Vercel Free:**
-- 100 GB bandwidth/mês
-- 100 horas serverless/mês
-- Unlimited deployments
+### 3.2 Testar Aplicação
 
-**Supabase Free:**
-- 500 MB database
-- 1 GB file storage
-- 2 GB bandwidth/mês
+1. Acesse a URL do deploy
+2. Você deve ser redirecionado para `/login`
+3. Entre com as credenciais padrão:
+   - **Email:** `admin@ogum.local`
+   - **Senha:** `Admin@123`
 
-Para seu caso (50 usuários, 1x/semana, 100 atendimentos), free tier é mais do que suficiente!
+4. Teste as funcionalidades principais:
+   - ✅ Login funcional
+   - ✅ Dashboard carrega
+   - ✅ Admin pode criar funções/tipos de gira
+   - ✅ Admin pode abrir giras
+   - ✅ Fila de atendimento funciona
+
+### 3.3 Verificar Banco de Dados
+
+1. No Supabase, vá em **Table Editor**
+2. Verifique que as tabelas foram criadas:
+   - `Function`
+   - `User`
+   - `GiraType`
+   - `Gira`
+   - `GiraMedium`
+   - `QueueEntry`
+   - `_prisma_migrations`
+
+## 🔧 Passo 4: Executar Seed em Produção (Opcional)
+
+Se você não executou o seed localmente antes:
+
+### Opção 1: Via Vercel CLI
+
+1. Instale Vercel CLI:
+   ```bash
+   npm i -g vercel
+   ```
+
+2. Faça login:
+   ```bash
+   vercel login
+   ```
+
+3. Execute seed em produção:
+   ```bash
+   vercel env pull .env.production
+   npx prisma db seed
+   ```
+
+### Opção 2: Manualmente via Supabase SQL Editor
+
+1. No Supabase, vá em **SQL Editor**
+2. Execute o SQL de seed (adapte conforme necessário):
+
+```sql
+-- Funções
+INSERT INTO "Function" (name) VALUES
+  ('Médium'),
+  ('Cambone'),
+  ('Ogã')
+ON CONFLICT (name) DO NOTHING;
+
+-- Tipos de Gira
+INSERT INTO "GiraType" (name) VALUES
+  ('Preto-Velho'),
+  ('Caboclo'),
+  ('Exu'),
+  ('Pomba-Gira')
+ON CONFLICT (name) DO NOTHING;
+
+-- Admin (senha: Admin@123)
+INSERT INTO "User" (name, email, password_hash, role, function_id, active)
+VALUES (
+  'Administrador',
+  'admin@ogum.local',
+  '$2a$10$YourBcryptHashHere',
+  'admin',
+  1,
+  true
+)
+ON CONFLICT (email) DO NOTHING;
+```
+
+> **Nota:** Gere o hash bcrypt correto usando:
+> ```bash
+> node -e "console.log(require('bcryptjs').hashSync('Admin@123', 10))"
+> ```
+
+## 🔄 Passo 5: Deploy Contínuo (CI/CD)
+
+Vercel configura CI/CD automaticamente:
+
+- **Push para `main`** → Deploy de Produção
+- **Pull Request** → Preview Deploy (URL temporária)
+- **Merge de PR** → Deploy de Produção
+
+### Redeploy Manual
+
+Se precisar redesplegar sem mudanças de código:
+
+1. No dashboard Vercel, vá em **Deployments**
+2. Clique nos 3 pontinhos do último deploy
+3. Selecione **"Redeploy"**
 
 ## 🐛 Troubleshooting
 
-### Erro "PrismaClient initialization error"
+### Erro: "PrismaClient is unable to run in Vercel Edge Runtime"
 
-- Rode `npx prisma generate` localmente e commit
-- Verifique que `DATABASE_URL` está configurado no Vercel
-- Certifique-se que Supabase está online
+**Solução:** Adicione ao `next.config.ts`:
 
-### "Too many connections" no banco
+```typescript
+const config: NextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma']
+  }
+}
+```
 
-- Use `DATABASE_URL` com connection pooling (porta 6543)
-- Adicione `connection_limit=1` na connection string
+### Erro: "Can't reach database server"
 
-### Deploy demora muito
+**Possíveis causas:**
+1. Senha incorreta (verifique encoding de caracteres especiais)
+2. String de conexão errada (porta 6543 para pooling, 5432 para direct)
+3. Firewall do Supabase (improvável no tier gratuito)
 
-- Vercel tem timeout de 10min para builds
-- Otimize `node_modules`: use `npm ci` ao invés de `npm install`
-- Verifique se não está instalando devDependencies em produção
+**Solução:**
+1. Verifique as variáveis de ambiente no Vercel
+2. Teste a conexão usando Prisma Studio localmente:
+   ```bash
+   npx prisma studio
+   ```
 
-### 500 Internal Server Error
+### Erro: "Environment variable not found: DATABASE_URL"
 
-- Verifique logs no Vercel Dashboard → **Deployments** → **Functions**
-- Confirme que migrations foram aplicadas no banco
-- Teste Server Actions localmente com mesmas variáveis de ambiente
+**Solução:**
+1. Certifique-se de que `DATABASE_URL` está configurada no Vercel
+2. Faça redeploy após adicionar a variável
 
-## 🔄 Rollback
+### Prisma Client não gerado
 
-Se algo der errado:
+**Solução:**
+Adicione ao `package.json` (já deve estar presente):
 
-1. Acesse Vercel Dashboard → **Deployments**
-2. Encontre deploy anterior estável
-3. Clique nos 3 pontinhos → **Promote to Production**
+```json
+{
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma generate && next build"
+  }
+}
+```
 
-## 📚 Recursos Adicionais
+### Auto-refresh não funciona
 
-- [Vercel Docs](https://vercel.com/docs)
-- [Supabase Docs](https://supabase.com/docs)
-- [Prisma Deploy Docs](https://www.prisma.io/docs/guides/deployment)
-- [Next.js Deployment](https://nextjs.org/docs/deployment)
+**Causa:** Hydration mismatch ou cache agressivo.
+
+**Solução:**
+1. Verifique que `router.refresh()` está sendo chamado
+2. Adicione `no-store` em fetches críticos:
+   ```typescript
+   export const dynamic = 'force-dynamic'
+   ```
+
+## 🔐 Segurança Pós-Deploy
+
+### ⚠️ ALTERE CREDENCIAIS PADRÃO
+
+1. Faça login como admin
+2. Vá em **Admin** → **Usuários**
+3. Edite o usuário admin e altere a senha
+4. (Opcional) Altere o email para um real
+
+### Habilitar HTTPS (Automático)
+
+Vercel fornece SSL/TLS automaticamente via Let's Encrypt. Todas as requisições HTTP são redirecionadas para HTTPS.
+
+### Configurar Domínio Personalizado (Opcional)
+
+1. No Vercel, vá em **Settings** → **Domains**
+2. Adicione seu domínio (ex: `ogum.com.br`)
+3. Configure DNS conforme instruções do Vercel:
+   - Adicione registro `A` ou `CNAME`
+4. Aguarde propagação DNS (~10min a 48h)
+
+### Backups do Banco de Dados
+
+Supabase faz backups automáticos:
+- **Tier Gratuito:** Backups diários, retenção de 7 dias
+- **Tier Pago:** Backups configuráveis, point-in-time recovery
+
+## 📊 Monitoramento
+
+### Logs da Vercel
+
+1. Acesse **Project** → **Logs**
+2. Monitore:
+   - Erros de runtime
+   - Latência de Server Actions
+   - Cold starts
+
+### Métricas do Supabase
+
+1. Acesse **Database** → **Reports**
+2. Monitore:
+   - Número de conexões ativas
+   - Queries por segundo
+   - Tamanho do banco (limite de 500MB no tier free)
+
+### Analytics (Opcional)
+
+Adicione Google Analytics ou Vercel Analytics:
+
+```bash
+npm install @vercel/analytics
+```
+
+```tsx
+// src/app/layout.tsx
+import { Analytics } from '@vercel/analytics/react'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  )
+}
+```
+
+## 🚀 Próximos Passos
+
+- [ ] Configurar domínio personalizado
+- [ ] Configurar notificações de erro (Sentry)
+- [ ] Implementar rate limiting
+- [ ] Adicionar testes E2E (Playwright)
+- [ ] Configurar CI/CD com testes automáticos
+
+## 📞 Suporte
+
+- **Vercel Docs:** https://vercel.com/docs
+- **Supabase Docs:** https://supabase.com/docs
+- **Next.js Docs:** https://nextjs.org/docs
+- **Prisma Docs:** https://www.prisma.io/docs
 
 ---
 
-**Dúvidas?** Abra uma issue no repositório ou consulte a documentação oficial.
+**Ogum Tech** - Deploy realizado com sucesso! ⚔️

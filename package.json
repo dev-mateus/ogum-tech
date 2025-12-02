@@ -1,6 +1,21 @@
 {
   "name": "ogum-tech",
   "version": "1.0.0",
+  "description": "Sistema moderno de gerenciamento de giras e filas de atendimento para terreiros de Umbanda",
+  "author": "Mateus <mateus@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dev-mateus/ogum-tech.git"
+  },
+  "keywords": [
+    "nextjs",
+    "prisma",
+    "typescript",
+    "umbanda",
+    "giras",
+    "queue-management"
+  ],
   "private": true,
   "prisma": {
     "seed": "tsx prisma/seed.ts"

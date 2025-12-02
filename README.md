@@ -1,250 +1,241 @@
-# Ogum Tech - Sistema de Gestão de Giras de Umbanda
+# Ogum Tech
 
-Sistema completo para gerenciamento de filas de atendimento em giras de Umbanda, desenvolvido com Next.js 15 e Prisma.
+[![Deploy on Vercel](https://vercel.com/button)](https://ogum-tech.vercel.app)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Tecnologias
+Sistema moderno de gerenciamento de giras e filas de atendimento para terreiros de Umbanda.
 
-- **Next.js 15.5** - Framework fullstack com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Estilização moderna
-- **Prisma 5.22.0** - ORM para PostgreSQL
-- **Supabase** - Backend-as-a-Service (PostgreSQL + Realtime)
-- **JWT (jose)** - Autenticação com HTTP-only cookies
-- **Zod** - Validação de schemas
-- **Bcrypt** - Hash de senhas
+**🌐 Produção:** [https://ogum-tech.vercel.app](https://ogum-tech.vercel.app)
+
+## ✨ Características
+
+- 🎨 **Design Minimalista**: Interface preto e branco representando as cores do terreiro
+- ⚡ **Performance**: Server-Side Rendering com Next.js 15
+- 🔒 **Segurança**: Autenticação JWT com bcrypt, HTTP-only cookies
+- 📱 **Responsivo**: Funciona perfeitamente em desktop e mobile
+- ♿ **Acessível**: WCAG AAA compliant (contraste 21:1)
+- 🔄 **Tempo Real**: Auto-refresh da fila a cada 5 segundos
+
+## 🚀 Stack Tecnológica
+
+### Frontend/Backend (Fullstack)
+- **Next.js 15.5.6** - App Router, Server Components, Server Actions
+- **React 18.3.1** - UI Library
+- **TypeScript 5.x** - Type Safety
+- **Tailwind CSS 4.x** - Utility-First CSS
+
+### Database & ORM
+- **PostgreSQL** - Database (via Supabase)
+- **Prisma 5.22.0** - ORM Type-Safe
+
+### Autenticação & Segurança
+- **JWT** (jose library) - Token-based authentication
+- **bcryptjs** - Password hashing (10 rounds)
+- **Zod** - Schema validation
+
+### Deploy
+- **Vercel** - Serverless deployment
+- **Supabase** - PostgreSQL hosting
 
 ## 📋 Funcionalidades
 
-### Autenticação e Autorização
-- Login com email/senha
-- JWT com expiração de 12 horas
-- Controle de acesso baseado em roles (admin/user)
-- HTTP-only cookies para segurança
+### Para Administradores
+- ✅ Cadastro de funções (Médium, Cambone, Ogã)
+- ✅ Cadastro de tipos de giras (Preto-Velho, Caboclo, etc)
+- ✅ Cadastro de usuários com roles
+- ✅ Abertura e fechamento de giras
+- ✅ Visualização de todas as giras
 
-### Gestão Administrativa (Admin)
-- Cadastro de funções (Médium, Cambone, Ogã)
-- Cadastro de tipos de gira (Preto-Velho, Caboclo, Exu, Pomba-Gira)
-- Cadastro de usuários com função
-- Abertura e encerramento de giras
-- Marcação de presença de médiuns
-
-### Gestão de Filas
-- Adição de consulentes na fila
-- Sequência automática de atendimento
-- Atribuição de médiuns aos consulentes
-- Atualização de status (aguardando → atendendo → atendido)
-- Auto-refresh a cada 5 segundos
-- Interface visual com cores por status
+### Para Operadores
+- ✅ Gestão de fila de atendimento
+- ✅ Adição de consulentes na fila
+- ✅ Atribuição de médiuns aos consulentes
+- ✅ Atualização de status (Aguardando → Em Atendimento → Finalizado)
+- ✅ Auto-refresh em tempo real
 
 ## 🛠️ Instalação Local
 
 ### Pré-requisitos
-- Node.js 18.x ou superior
-- npm ou yarn
+- Node.js 18+ e npm
 - Conta no Supabase (ou PostgreSQL local)
+- Git
 
-### Passos
+### Passo a Passo
 
-1. **Clone o repositório**
+1. **Clone o repositório:**
 ```bash
-git clone https://github.com/seu-usuario/ogum-tech.git
+git clone https://github.com/dev-mateus/ogum-tech.git
 cd ogum-tech
 ```
 
-2. **Instale as dependências**
+2. **Instale as dependências:**
 ```bash
 npm install
 ```
 
-3. **Configure as variáveis de ambiente**
+3. **Configure as variáveis de ambiente:**
 
-Crie um arquivo `.env` na raiz:
+Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-# Database (Supabase PostgreSQL)
-DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5432/postgres?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5432/postgres"
+# Database (Supabase ou PostgreSQL)
+DATABASE_URL="postgresql://postgres.xxx:[PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.xxx:[PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:5432/postgres"
 
-# Auth
-NEXTAUTH_SECRET="sua-chave-secreta-gerada-com-openssl"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Supabase (opcional para Realtime)
-NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT].supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="sua-anon-key"
+# JWT Secret (gere uma chave aleatória)
+NEXTAUTH_SECRET="seu-secret-aqui"
 ```
 
-4. **Gere uma chave secreta forte**
+> **Nota:** Use `openssl rand -base64 32` para gerar uma chave secreta segura.
+
+4. **Execute as migrações do Prisma:**
 ```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+npx prisma migrate dev
 ```
 
-5. **Rode as migrations do Prisma**
-```bash
-npx prisma migrate dev --name init_schema
-```
-
-6. **Popule o banco com dados iniciais**
+5. **Popule o banco de dados (opcional):**
 ```bash
 npx prisma db seed
 ```
 
-Isso criará:
-- Funções: Médium, Cambone, Ogã
-- Tipos de gira: Preto-Velho, Caboclo, Exu, Pomba-Gira
-- Admin: `admin@ogum.local` / `Admin@123`
-- Usuários teste: `maria@ogum.local`, `joao@ogum.local`, `ana@ogum.local` / `User@123`
-
-7. **Inicie o servidor de desenvolvimento**
+6. **Inicie o servidor de desenvolvimento:**
 ```bash
 npm run dev
 ```
 
-Acesse http://localhost:3000
+Acesse [http://localhost:3000](http://localhost:3000)
 
-## 📦 Scripts Disponíveis
+## 🔑 Credenciais Padrão
 
-```bash
-npm run dev          # Inicia servidor de desenvolvimento
-npm run build        # Build para produção
-npm run start        # Inicia servidor de produção
-npm run lint         # Roda ESLint
-npx prisma studio    # Abre interface visual do banco
-npx prisma db seed   # Popula banco com dados iniciais
-```
+Após executar o seed, use estas credenciais para login:
 
-## 🔐 Credenciais Padrão
+- **Email:** `admin@ogum.local`
+- **Senha:** `Admin@123`
 
-### Admin
-- Email: `admin@ogum.local`
-- Senha: `Admin@123`
+> ⚠️ **Importante:** Altere essas credenciais em produção!
 
-### Usuários de Teste
-- Email: `maria@ogum.local` / `joao@ogum.local` / `ana@ogum.local`
-- Senha: `User@123`
-
-**⚠️ IMPORTANTE:** Altere essas senhas em produção!
-
-## 🗂️ Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 ogum-tech/
+├── prisma/
+│   ├── schema.prisma        # Schema do banco de dados
+│   └── seed.ts              # Dados iniciais
 ├── src/
 │   ├── app/
-│   │   ├── actions/          # Server Actions (auth, admin, queue)
-│   │   ├── dashboard/        # Páginas protegidas
-│   │   │   ├── admin/        # Admin CRUD
-│   │   │   └── gira/[id]/    # Detalhes da gira e fila
-│   │   ├── login/            # Página de login
-│   │   └── page.tsx          # Root redirect
-│   ├── components/           # Componentes React
-│   │   ├── AdminForms.tsx    # Formulários admin
-│   │   ├── GiraQueue.tsx     # Gestão da fila
-│   │   ├── Header.tsx        # Cabeçalho
-│   │   └── Sidebar.tsx       # Menu lateral
-│   └── lib/
-│       ├── prisma.ts         # Cliente Prisma
-│       ├── supabase.ts       # Cliente Supabase
-│       └── validations.ts    # Schemas Zod
-├── prisma/
-│   ├── schema.prisma         # Schema do banco
-│   └── seed.ts               # Script de seed
-└── public/                   # Arquivos estáticos
+│   │   ├── actions/         # Server Actions
+│   │   │   ├── admin.ts     # Ações administrativas
+│   │   │   ├── auth.ts      # Autenticação
+│   │   │   └── queue.ts     # Gestão de fila
+│   │   ├── dashboard/       # Área autenticada
+│   │   │   ├── admin/       # Painel administrativo
+│   │   │   ├── gira/[id]/   # Página de gira específica
+│   │   │   └── page.tsx     # Lista de giras
+│   │   └── login/           # Página de login
+│   ├── components/          # Componentes React
+│   │   ├── AdminForms.tsx   # Formulários administrativos
+│   │   ├── GiraQueue.tsx    # Componente de fila
+│   │   ├── Header.tsx       # Cabeçalho
+│   │   └── Sidebar.tsx      # Menu lateral
+│   └── lib/                 # Utilitários
+│       ├── prisma.ts        # Cliente Prisma
+│       └── validations.ts   # Schemas Zod
+├── ARCHITECTURE.md          # Documentação da arquitetura
+├── DEPLOY.md                # Guia de deploy
+└── package.json             # Dependências
 ```
 
-## 🎯 Fluxo de Uso
+## 🚀 Deploy para Produção
 
-1. **Admin abre uma gira**
-   - Acessa `/dashboard/admin`
-   - Seleciona tipo de gira e data
-   - Marca presença dos médiuns
+### Vercel (Recomendado)
 
-2. **Durante a gira**
-   - Acessa a gira em `/dashboard/gira/[id]`
-   - Adiciona consulentes na fila (nome é suficiente)
-   - Atribui médium ao primeiro da fila
-   - Muda status para "atendendo"
-   - Finaliza atendimento → status "atendido"
-   - Próximo consulente automaticamente
+1. **Crie um projeto no Supabase:**
+   - Acesse [supabase.com](https://supabase.com)
+   - Crie um novo projeto
+   - Copie as connection strings
 
-3. **Encerrar gira**
-   - Admin retorna a `/dashboard/admin`
-   - Encerra gira (só permite se fila vazia)
+2. **Deploy no Vercel:**
+   - Conecte seu repositório GitHub
+   - Configure as variáveis de ambiente:
+     - `DATABASE_URL`
+     - `DIRECT_URL`
+     - `NEXTAUTH_SECRET`
+   - Deploy automático!
 
-## 🔄 Real-time
+Veja o arquivo [DEPLOY.md](./DEPLOY.md) para instruções detalhadas.
 
-Atualmente usa **auto-refresh a cada 5 segundos** no componente `GiraQueue`.
+## 🗃️ Modelo de Dados
 
-Para implementar Supabase Realtime (WebSocket):
-- Configure as variáveis `NEXT_PUBLIC_SUPABASE_*`
-- Substitua `useEffect` interval por `supabase.channel().on('postgres_changes')`
+### Entidades Principais
 
-## 📊 Modelo de Dados
+- **User** - Usuários do sistema (Admin, Médium, Cambone, Ogã)
+- **Function** - Funções disponíveis no terreiro
+- **GiraType** - Tipos de giras (Preto-Velho, Caboclo, etc)
+- **Gira** - Giras abertas/fechadas
+- **GiraMedium** - Médiuns presentes em cada gira
+- **QueueEntry** - Fila de atendimento
 
-### Principais Entidades
-- **Function** - Funções (Médium, Cambone, Ogã)
-- **User** - Usuários do sistema (role: admin/user)
-- **GiraType** - Tipos de gira (Preto-Velho, Caboclo...)
-- **Gira** - Sessão de atendimento
-- **GiraMedium** - Presença de médiuns na gira
-- **QueueEntry** - Consulente na fila (sequence, status)
+Veja o arquivo [ARCHITECTURE.md](./ARCHITECTURE.md) para o diagrama completo.
 
-### Status da Fila
-- `aguardando` - Esperando atendimento
-- `atendendo` - Em atendimento
-- `atendido` - Finalizado
+## 🎨 Design System
 
-## 🚀 Deploy
+O projeto utiliza um design minimalista em **preto e branco**, representando as cores sagradas do terreiro de Umbanda:
 
-Veja instruções completas em [DEPLOY.md](./DEPLOY.md)
+- **Preto (#000000)**: Cor principal, força e proteção
+- **Branco (#FFFFFF)**: Pureza e luz
+- **Cinza (50-900)**: Variações para hierarquia visual
 
-### Resumo Rápido (Vercel + Supabase)
-1. Crie projeto no Supabase
-2. Copie DATABASE_URL e DIRECT_URL
-3. Conecte repo ao Vercel
-4. Configure variáveis de ambiente
-5. Deploy automático!
+### Princípios de Design
+- ✅ Tipografia bold e uppercase em labels
+- ✅ Bordas sólidas (border-2) sem arredondamento
+- ✅ Contraste máximo (WCAG AAA - 21:1)
+- ✅ Estados de foco visíveis para acessibilidade
 
-## 🐛 Troubleshooting
+## 📚 Documentação Adicional
 
-### Erro "PrismaClient is unable to connect"
-- Verifique `DATABASE_URL` e `DIRECT_URL` no `.env`
-- Confirme que IP está na whitelist do Supabase
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Arquitetura detalhada do sistema
+- [DEPLOY.md](./DEPLOY.md) - Guia completo de deploy
+- [SECURITY_AUDIT.md](./SECURITY_AUDIT.md) - Auditoria de segurança
 
-### "Invalid credentials" no login
-- Rode `npx prisma db seed` para criar usuários
-- Verifique que migrations foram aplicadas
+## 🤝 Contribuindo
 
-### Auto-refresh não funciona
-- Componente `GiraQueue` precisa ser Client Component
-- Verifique console do navegador para erros
+Contribuições são bem-vindas! Por favor:
 
-## 📝 Licença
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'feat: adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
 
-MIT
+### Convenções de Commit
 
-## 👥 Contribuindo
+Seguimos o padrão [Conventional Commits](https://www.conventionalcommits.org/):
 
-Pull requests são bem-vindos! Para mudanças grandes, abra uma issue primeiro.
+- `feat:` - Nova funcionalidade
+- `fix:` - Correção de bug
+- `docs:` - Documentação
+- `style:` - Formatação, estilos
+- `refactor:` - Refatoração de código
+- `perf:` - Melhorias de performance
+- `test:` - Adição de testes
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
+
+## 👨‍💻 Autor
+
+Desenvolvido com ❤️ por [Mateus](https://github.com/dev-mateus)
+
+## 🙏 Agradecimentos
+
+- Comunidade Next.js
+- Equipe do Prisma
+- Supabase Team
+- Terreiros de Umbanda que inspiraram este projeto
 
 ---
 
-**Desenvolvido com ❤️ para casas de Umbanda**
-
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Ogum Tech** - Tecnologia a serviço da fé ⚔️
