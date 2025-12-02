@@ -1,0 +1,110 @@
+// Prisma Schema - Ogum Tech v2
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Funções (médium, cambone, ogã, etc)
+model Function {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+
+  @@map("functions")
+}
+
+// Usuários do sistema (50 cambones/médiuns/admin)
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   // 'admin' | 'user'
+  functionId   Int?     @map("function_id")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  
+  function      Function?       @relation(fields: [functionId], references: [id])
+  giraMediums   GiraMedium[]
+  queueEntries  QueueEntry[]    @relation("AssignedMedium")
+
+  @@index([email])
+  @@map("users")
+}
+
+// Tipos de gira (Preto-Velho, Caboclo, etc)
+model GiraType {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  giras Gira[]
+
+  @@map("gira_types")
+}
+
+// Giras (sessões)
+model Gira {
+  id         Int      @id @default(autoincrement())
+  giraTypeId Int      @map("gira_type_id")
+  openedAt   DateTime @default(now()) @map("opened_at")
+  closedAt   DateTime? @map("closed_at")
+  status     String   @default("aberta") // 'aberta' | 'encerrada'
+  
+  giraType     GiraType       @relation(fields: [giraTypeId], references: [id])
+  mediums      GiraMedium[]
+  queueEntries QueueEntry[]
+
+  @@index([status, openedAt])
+  @@map("giras")
+}
+
+// Médiuns presentes na gira (relacionamento many-to-many)
+model GiraMedium {
+  giraId   Int @map("gira_id")
+  mediumId Int @map("medium_id")
+  
+  gira   Gira @relation(fields: [giraId], references: [id], onDelete: Cascade)
+  medium User @relation(fields: [mediumId], references: [id])
+
+  @@id([giraId, mediumId])
+  @@map("gira_mediums")
+}
+
+// Fila de atendimento (100 atendimentos/semana)
+model QueueEntry {
+  id              Int       @id @default(autoincrement())
+  giraId          Int       @map("gira_id")
+  consultantName  String    @map("consultant_name")
+  consultantPhone String?   @map("consultant_phone")
+  sequence        Int       // Posição na fila
+  status          String    @default("aguardando") // 'aguardando' | 'em_atendimento' | 'atendido' | 'cancelado'
+  assignedMediumId Int?     @map("assigned_medium_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  startedAt       DateTime? @map("started_at")
+  finishedAt      DateTime? @map("finished_at")
+  
+  gira           Gira  @relation(fields: [giraId], references: [id], onDelete: Cascade)
+  assignedMedium User? @relation("AssignedMedium", fields: [assignedMediumId], references: [id])
+
+  @@index([giraId, sequence])
+  @@index([status])
+  @@map("queue_entries")
+}
+
+// FUTURO: Cadastro de consulentes (300/ano)
+// Descomente quando implementar autocomplete
+// model Consulente {
+//   id          Int       @id @default(autoincrement())
+//   name        String
+//   phone       String?   @unique
+//   birthDate   DateTime? @map("birth_date")
+//   createdAt   DateTime  @default(now()) @map("created_at")
+//   lastVisit   DateTime? @map("last_visit")
+//   
+//   @@index([name]) // Para autocomplete
+//   @@map("consulentes")
+// }
