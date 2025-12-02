@@ -130,11 +130,15 @@ export default function AdminForms() {
     if (tab === 'gira' && giraTypes.length === 0) loadGiraTypes()
   }
 
+  const inputClass = "w-full px-4 py-3 bg-white border-2 border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0 transition-colors font-medium"
+  const labelClass = "block text-sm font-bold text-black mb-2 uppercase tracking-wide"
+  const buttonClass = "px-6 py-3 bg-black text-white font-bold hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div className="bg-white border-2 border-black">
       {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex -mb-px">
+      <div className="border-b-2 border-black">
+        <nav className="flex">
           {[
             { key: 'function', label: 'Funções' },
             { key: 'giraType', label: 'Tipos de Gira' },
@@ -144,10 +148,10 @@ export default function AdminForms() {
             <button
               key={tab.key}
               onClick={() => handleTabChange(tab.key as typeof activeTab)}
-              className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+              className={`px-8 py-4 text-sm font-bold uppercase tracking-wide transition-colors ${
                 activeTab === tab.key
-                  ? 'border-purple-600 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'bg-black text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
               }`}
             >
               {tab.label}
@@ -157,21 +161,22 @@ export default function AdminForms() {
       </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-8">
         {message && (
           <div
-            className={`mb-4 p-4 rounded-lg ${
-              message.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+            className={`mb-6 p-4 border-2 font-medium ${
+              message.type === 'success' ? 'bg-gray-100 border-black text-black' : 'bg-white border-black text-black'
             }`}
+            role="alert"
           >
             {message.text}
           </div>
         )}
 
         {activeTab === 'function' && (
-          <form onSubmit={handleCreateFunction} className="space-y-4 max-w-md">
+          <form onSubmit={handleCreateFunction} className="space-y-6 max-w-md">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClass}>
                 Nome da Função
               </label>
               <input
@@ -180,13 +185,13 @@ export default function AdminForms() {
                 onChange={(e) => setFunctionName(e.target.value)}
                 placeholder="Ex: Médium, Cambone, Ogã"
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+              className={buttonClass}
             >
               {loading ? 'Criando...' : 'Criar Função'}
             </button>
@@ -194,9 +199,9 @@ export default function AdminForms() {
         )}
 
         {activeTab === 'giraType' && (
-          <form onSubmit={handleCreateGiraType} className="space-y-4 max-w-md">
+          <form onSubmit={handleCreateGiraType} className="space-y-6 max-w-md">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClass}>
                 Nome do Tipo de Gira
               </label>
               <input
@@ -205,13 +210,13 @@ export default function AdminForms() {
                 onChange={(e) => setGiraTypeName(e.target.value)}
                 placeholder="Ex: Preto-Velho, Caboclo, Exu"
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+              className={buttonClass}
             >
               {loading ? 'Criando...' : 'Criar Tipo de Gira'}
             </button>
@@ -219,55 +224,58 @@ export default function AdminForms() {
         )}
 
         {activeTab === 'user' && (
-          <form onSubmit={handleCreateUser} className="space-y-4 max-w-md">
+          <form onSubmit={handleCreateUser} className="space-y-6 max-w-md">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+              <label className={labelClass}>Nome</label>
               <input
                 type="text"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
+                placeholder="Nome completo"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className={labelClass}>Email</label>
               <input
                 type="email"
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
+                placeholder="email@exemplo.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <label className={labelClass}>Senha</label>
               <input
                 type="password"
                 value={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
+                placeholder="Mínimo 6 caracteres"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+              <label className={labelClass}>Tipo</label>
               <select
                 value={userRole}
                 onChange={(e) => setUserRole(e.target.value as 'admin' | 'user')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
               >
                 <option value="user">Usuário</option>
                 <option value="admin">Administrador</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Função (opcional)</label>
+              <label className={labelClass}>Função (opcional)</label>
               <select
                 value={userFunctionId}
                 onChange={(e) => setUserFunctionId(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
               >
                 <option value="">Nenhuma</option>
                 {functions.map((func) => (
@@ -280,7 +288,7 @@ export default function AdminForms() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+              className={buttonClass}
             >
               {loading ? 'Criando...' : 'Criar Usuário'}
             </button>
@@ -288,16 +296,16 @@ export default function AdminForms() {
         )}
 
         {activeTab === 'gira' && (
-          <form onSubmit={handleCreateGira} className="space-y-4 max-w-md">
+          <form onSubmit={handleCreateGira} className="space-y-6 max-w-md">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={labelClass}>
                 Tipo de Gira
               </label>
               <select
                 value={giraTypeId}
                 onChange={(e) => setGiraTypeId(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className={inputClass}
               >
                 <option value="">Selecione...</option>
                 {giraTypes.map((type) => (
@@ -310,7 +318,7 @@ export default function AdminForms() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+              className={buttonClass}
             >
               {loading ? 'Abrindo...' : 'Abrir Gira'}
             </button>

@@ -20,14 +20,14 @@ export default async function GiraPage({ params }: { params: Promise<{ id: strin
   const mediums = mediumsResult.success ? mediumsResult.mediums || [] : []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gerenciar Gira</h1>
-          <p className="text-gray-600 mt-1">Fila de atendimento em tempo real</p>
+          <h1 className="text-3xl font-bold text-black">Gerenciar Gira</h1>
+          <p className="text-gray-600 mt-2">Fila de atendimento em tempo real • Auto-refresh 5s</p>
         </div>
-        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg font-medium">
-          {queue.length} na fila
+        <div className="bg-black text-white px-6 py-3 font-bold text-lg">
+          {queue.length} NA FILA
         </div>
       </div>
 

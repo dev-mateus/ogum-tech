@@ -10,10 +10,10 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Administração</h1>
-        <p className="text-gray-600 mt-1">Gerenciar funções, tipos de gira, usuários e giras</p>
+        <h1 className="text-3xl font-bold text-black">Administração</h1>
+        <p className="text-gray-600 mt-2">Gerenciar funções, tipos de gira, usuários e giras</p>
       </div>
 
       <AdminForms />
