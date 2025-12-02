@@ -25,45 +25,59 @@ export default function Sidebar({ user }: { user: User }) {
   }
 
   return (
-    <aside className="w-64 bg-purple-900 text-white flex flex-col">
-      <div className="p-6 border-b border-purple-800">
-        <h1 className="text-2xl font-bold">Ogum Tech</h1>
-        <p className="text-sm text-purple-200 mt-1">{user.name}</p>
-        <p className="text-xs text-purple-300">{user.role === 'admin' ? 'Administrador' : 'Usuário'}</p>
+    <aside className="w-64 bg-black text-white flex flex-col">
+      {/* Logo e Info do Usuário */}
+      <div className="p-6 border-b border-gray-800">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-white text-black flex items-center justify-center font-bold text-lg">
+            OT
+          </div>
+          <h1 className="text-xl font-bold">Ogum Tech</h1>
+        </div>
+        <div className="text-sm">
+          <p className="font-semibold text-white">{user.name}</p>
+          <p className="text-gray-400 text-xs mt-1">
+            {user.role === 'admin' ? 'Administrador' : 'Usuário'}
+          </p>
+        </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      {/* Navegação */}
+      <nav className="flex-1 p-4 space-y-1">
         <Link
           href="/dashboard"
-          className={`block px-4 py-3 rounded-lg transition-colors ${
+          className={`block px-4 py-3 font-medium transition-colors ${
             isActive('/dashboard')
-              ? 'bg-purple-800 text-white'
-              : 'text-purple-100 hover:bg-purple-800/50'
+              ? 'bg-white text-black'
+              : 'text-gray-300 hover:bg-gray-900 hover:text-white'
           }`}
         >
-          📊 Dashboard
+          <span aria-hidden="true" className="mr-2">■</span>
+          Dashboard
         </Link>
 
         {user.role === 'admin' && (
           <Link
             href="/dashboard/admin"
-            className={`block px-4 py-3 rounded-lg transition-colors ${
+            className={`block px-4 py-3 font-medium transition-colors ${
               isActive('/dashboard/admin')
-                ? 'bg-purple-800 text-white'
-                : 'text-purple-100 hover:bg-purple-800/50'
+                ? 'bg-white text-black'
+                : 'text-gray-300 hover:bg-gray-900 hover:text-white'
             }`}
           >
-            ⚙️ Administração
+            <span aria-hidden="true" className="mr-2">■</span>
+            Administração
           </Link>
         )}
       </nav>
 
-      <div className="p-4 border-t border-purple-800">
+      {/* Botão Sair */}
+      <div className="p-4 border-t border-gray-800">
         <button
           onClick={handleLogout}
-          className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-white font-medium"
+          className="w-full px-4 py-3 bg-white text-black hover:bg-gray-200 transition-colors font-semibold"
         >
-          🚪 Sair
+          Sair
         </button>
       </div>
     </aside>

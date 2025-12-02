@@ -28,16 +28,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-900 via-purple-800 to-indigo-900">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">Ogum Tech</h1>
-          <p className="text-purple-200">Sistema de Gerenciamento de Giras</p>
+    <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="w-full max-w-md p-8 space-y-8">
+        {/* Logo e Título */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-black text-white text-2xl font-bold mb-4">
+            OT
+          </div>
+          <h1 className="text-3xl font-bold text-black tracking-tight">Ogum Tech</h1>
+          <p className="text-gray-600 text-sm">Sistema de Gerenciamento de Giras</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Formulário */}
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-purple-100 mb-1">
+            <label htmlFor="email" className="block text-sm font-semibold text-black mb-2">
               Email
             </label>
             <input
@@ -46,13 +51,14 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              autoComplete="email"
+              className="w-full px-4 py-3 bg-white border-2 border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0 transition-colors"
               placeholder="seu@email.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-purple-100 mb-1">
+            <label htmlFor="password" className="block text-sm font-semibold text-black mb-2">
               Senha
             </label>
             <input
@@ -61,28 +67,30 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
+              autoComplete="current-password"
+              className="w-full px-4 py-3 bg-white border-2 border-gray-300 text-black placeholder-gray-400 focus:border-black focus:ring-0 transition-colors"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-500/20 border border-red-400/50 rounded-lg">
-              <p className="text-sm text-red-100">{error}</p>
+            <div className="p-4 bg-gray-100 border-2 border-black" role="alert">
+              <p className="text-sm font-medium text-black">{error}</p>
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 text-white font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-purple-900"
+            className="w-full py-3 px-4 bg-black text-white font-semibold hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors focus:ring-2 focus:ring-black focus:ring-offset-2"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 
-        <div className="text-center text-sm text-purple-200">
-          <p>Primeiro acesso? Entre em contato com o administrador</p>
+        {/* Nota */}
+        <div className="text-center">
+          <p className="text-xs text-gray-600">Primeiro acesso? Entre em contato com o administrador</p>
         </div>
       </div>
     </div>
