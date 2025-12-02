@@ -80,6 +80,9 @@ export default function Sidebar({ user }: { user: User }) {
           Sair
         </button>
       </div>
+        <div className="mt-auto p-4 text-xs text-gray-400 border-t border-gray-800 text-center">
+          © 2025 Ogum Tech.<br />Licenciado sob MIT License.<br />Desenvolvido com <span aria-label="amor" role="img">❤️</span> por <a href="https://github.com/dev-mateus" className="underline hover:text-white">Mateus</a>
+        </div>
     </aside>
   )
 }

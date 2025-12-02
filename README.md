@@ -239,3 +239,9 @@ Desenvolvido com ❤️ por [Mateus](https://github.com/dev-mateus)
 ---
 
 **Ogum Tech** - Tecnologia a serviço da fé ⚔️
+
+---
+
+© 2025 Ogum Tech. Licenciado sob MIT License (licença utilizada).
+
+Desenvolvido com ❤️ por [Mateus](https://github.com/dev-mateus)

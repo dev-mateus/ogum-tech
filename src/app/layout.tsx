@@ -23,11 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <footer className="w-full text-center py-6 text-xs text-gray-500 border-t border-gray-200 mt-12">
+          © 2025 Ogum Tech. Licenciado sob MIT License. Desenvolvido com <span aria-label="amor" role="img">❤️</span> por <a href="https://github.com/dev-mateus" className="underline hover:text-black">Mateus</a>
+        </footer>
       </body>
     </html>
   );
